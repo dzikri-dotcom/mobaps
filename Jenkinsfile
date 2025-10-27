@@ -29,9 +29,9 @@ pipeline {
         
         stage('Push to Docker Hub') {
             steps {
-                // Kredensial Jenkins dengan ID: DOCKERHUB_CREDENTIALS_ID
+                // ID Kredensial Disesuaikan dengan yang ada di Jenkins Anda: dockerhub-credentials
                 withCredentials([usernamePassword(
-                    credentialsId: 'DOCKERHUB_CREDENTIALS_ID', 
+                    credentialsId: 'dockerhub-credentials', 
                     passwordVariable: 'DOCKER_PASSWORD', 
                     usernameVariable: 'DOCKER_USERNAME')]) {
                     
