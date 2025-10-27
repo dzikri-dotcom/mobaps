@@ -1,9 +1,12 @@
 pipeline {
     agent any
-    
-    // VARIABEL DOCKER HUB DIUPDATE: Menggunakan username dzikri2811
-    def dockerRepo = "dzikri2811/truth-or-dare-app" 
-    def imageTag = "${env.BUILD_NUMBER}" 
+
+    // VARIABEL SEKARANG DIDEFINISIKAN DI DALAM BLOK 'environment'
+    environment {
+        DOCKER_REPO = "dzikri2811/truth-or-dare-app" 
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        // Variabel harus UPPERCASE di sini, tetapi dapat diakses sebagai ${VARIABLE}
+    }
 
     stages {
         stage('Checkout Source Code') {
@@ -16,16 +19,16 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    // Menggunakan 'bat' untuk Windows: menjalankan docker build
-                    bat "docker build -t ${dockerRepo}:${imageTag} ."
-                    bat "docker tag ${dockerRepo}:${imageTag} ${dockerRepo}:latest"
+                    // Menggunakan variabel environment (contoh: ${DOCKER_REPO})
+                    bat "docker build -t ${DOCKER_REPO}:${IMAGE_TAG} ."
+                    bat "docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${DOCKER_REPO}:latest"
                 }
             }
         }
         
         stage('Push to Docker Hub') {
             steps {
-                // Pastikan Kredensial di Jenkins memiliki ID: DOCKERHUB_CREDENTIALS_ID
+                // Kredensial di Jenkins: DOCKERHUB_CREDENTIALS_ID
                 withCredentials([usernamePassword(
                     credentialsId: 'DOCKERHUB_CREDENTIALS_ID', 
                     passwordVariable: 'DOCKER_PASSWORD', 
@@ -33,10 +36,10 @@ pipeline {
                     
                     echo 'Logging into Docker Hub and pushing images...'
                     
-                    // Menggunakan 'bat' dan sintaks variabel %VARIABLE% untuk Windows
+                    // Menggunakan 'bat' dan variabel kredensial (%VARIABLE%)
                     bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
-                    bat "docker push ${dockerRepo}:${imageTag}"
-                    bat "docker push ${dockerRepo}:latest"
+                    bat "docker push ${DOCKER_REPO}:${IMAGE_TAG}"
+                    bat "docker push ${DOCKER_REPO}:latest"
                 }
             }
         }
@@ -44,9 +47,8 @@ pipeline {
         stage('Clean Up') {
             steps {
                 echo 'Cleaning up local images...'
-                // Menggunakan 'bat' untuk Windows
-                bat "docker rmi ${dockerRepo}:${imageTag}"
-                bat "docker rmi ${dockerRepo}:latest"
+                bat "docker rmi ${DOCKER_REPO}:${IMAGE_TAG}"
+                bat "docker rmi ${DOCKER_REPO}:latest"
             }
         }
     }
