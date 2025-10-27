@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    // Variabel konfigurasi yang didefinisikan dalam blok 'environment' (Struktur Deklaratif)
+    // Variabel didefinisikan dalam blok 'environment' untuk Pipeline Deklaratif
     environment {
-        // Ganti dengan username Docker Hub Anda
+        // Username Docker Hub Anda
         DOCKER_REPO = "dzikri2811/truth-or-dare-app" 
         // Menggunakan nomor build Jenkins sebagai tag image
         IMAGE_TAG = "${env.BUILD_NUMBER}"
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    // Menggunakan 'bat' untuk eksekusi di Windows. Titik (.) merujuk ke Dockerfile di root
+                    // Menggunakan 'bat' untuk eksekusi perintah di Windows
                     bat "docker build -t ${DOCKER_REPO}:${IMAGE_TAG} ."
                     bat "docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${DOCKER_REPO}:latest"
                 }
@@ -29,7 +29,7 @@ pipeline {
         
         stage('Push to Docker Hub') {
             steps {
-                // Jenkins akan mencari ID kredensial ini
+                // Kredensial Jenkins dengan ID: DOCKERHUB_CREDENTIALS_ID
                 withCredentials([usernamePassword(
                     credentialsId: 'DOCKERHUB_CREDENTIALS_ID', 
                     passwordVariable: 'DOCKER_PASSWORD', 
