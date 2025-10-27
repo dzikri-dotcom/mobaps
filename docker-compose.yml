@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  truth-or-dare-app:
+    build: .
+    container_name: truth-or-dare-app
+    image: dzikri2811/truth-or-dare-app:latest
+    ports:
+      - "9050:80"

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">truth-or-dare-app</string>
+    <string name="title_activity_main">truth-or-dare-app</string>
+    <string name="package_name">com.dzikri.truthordare</string>
+    <string name="custom_url_scheme">com.dzikri.truthordare</string>
+</resources>
