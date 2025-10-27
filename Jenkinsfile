@@ -1,11 +1,12 @@
 pipeline {
     agent any
 
-    // VARIABEL SEKARANG DIDEFINISIKAN DI DALAM BLOK 'environment'
+    // Variabel konfigurasi yang didefinisikan dalam blok 'environment' (Struktur Deklaratif)
     environment {
+        // Ganti dengan username Docker Hub Anda
         DOCKER_REPO = "dzikri2811/truth-or-dare-app" 
+        // Menggunakan nomor build Jenkins sebagai tag image
         IMAGE_TAG = "${env.BUILD_NUMBER}"
-        // Variabel harus UPPERCASE di sini, tetapi dapat diakses sebagai ${VARIABLE}
     }
 
     stages {
@@ -19,7 +20,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 script {
-                    // Menggunakan variabel environment (contoh: ${DOCKER_REPO})
+                    // Menggunakan 'bat' untuk eksekusi di Windows. Titik (.) merujuk ke Dockerfile di root
                     bat "docker build -t ${DOCKER_REPO}:${IMAGE_TAG} ."
                     bat "docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${DOCKER_REPO}:latest"
                 }
@@ -28,7 +29,7 @@ pipeline {
         
         stage('Push to Docker Hub') {
             steps {
-                // Kredensial di Jenkins: DOCKERHUB_CREDENTIALS_ID
+                // Jenkins akan mencari ID kredensial ini
                 withCredentials([usernamePassword(
                     credentialsId: 'DOCKERHUB_CREDENTIALS_ID', 
                     passwordVariable: 'DOCKER_PASSWORD', 
@@ -36,7 +37,7 @@ pipeline {
                     
                     echo 'Logging into Docker Hub and pushing images...'
                     
-                    // Menggunakan 'bat' dan variabel kredensial (%VARIABLE%)
+                    // Menggunakan 'bat' dan sintaks variabel Windows %VARIABLE% untuk login
                     bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
                     bat "docker push ${DOCKER_REPO}:${IMAGE_TAG}"
                     bat "docker push ${DOCKER_REPO}:latest"
